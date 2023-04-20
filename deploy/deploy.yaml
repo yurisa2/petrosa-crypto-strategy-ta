@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: petrosa-crypto-strategy-ta
+  namespace: petrosa-apps
+  labels:
+    app: petrosa-crypto-strategy-ta-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nosql-petrosa-binance
+  template:
+    metadata:
+      labels:
+        app: nosql-petrosa-binance
+    spec:
+      containers:
+      - name: nosql-petrosa-binance
+        image: yurisa2/petrosa-crypto-strategy-ta:v0.0.1
+        imagePullPolicy: Always
+        env:
+          - name: VERSION
+            value: "0.0.1"
+          - name: KAFKA_SUBSCRIBER
+            valueFrom:
+              secretKeyRef:
+                name: petrosa-apps-secret
+                key: KAFKA_SUBSCRIBER
+                optional: false
+          - name: MONGO_URI
+            valueFrom:
+              secretKeyRef:
+                name: petrosa-apps-secret
+                key: MONGO_URI
+                optional: false
+
+          - name: NEW_RELIC_LICENSE_KEY
+            valueFrom:
+              secretKeyRef:
+                name: petrosa-apps-secret
+                key: NEW_RELIC_LICENSE_KEY
+                optional: false
+      restartPolicy: Always

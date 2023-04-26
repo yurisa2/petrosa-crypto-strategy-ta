@@ -38,12 +38,15 @@ def run_strategies(raw_period, ticker) -> None:
         result = func(data, struct[raw_period])
         if result != {}:
             bt_result = get_bt_result(symbol=ticker, strategy=ta, period=struct[raw_period])
-            if(bt_result and 
-               bt_result["n_trades"] > N_TRADES_LIMIT and 
-               bt_result["sqn"] > SQN_LIMIT):
-                full_result = {**result, **bt_result}
-                print("persisting", result)
-                mongo.get_client()["petrosa_crypto"]["time_limit_orders"].insert_one(full_result)
+            try:
+                if(bt_result and 
+                bt_result["n_trades"] > N_TRADES_LIMIT and 
+                bt_result["sqn"] > SQN_LIMIT):
+                    full_result = {**result, **bt_result}
+                    print("persisting", result)
+                    mongo.get_client()["petrosa_crypto"]["time_limit_orders"].insert_one(full_result)
+            except Exception as e:
+                print(e, result, bt_result)
 
 receiver = kafkareceiver.get_consumer("binance_klines_current")
 

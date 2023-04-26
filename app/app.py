@@ -1,34 +1,62 @@
 from petrosa.ta import strategies as screenings
 from petrosa.database import mongo
 from petrosa.binance import binance
+from petrosa.messaging import kafkareceiver
 import threading
+import os
+import json
+import time
 
-periods = ["m15", "m30", "h1"]
 
-COL_PREFIX = "candles_"
+os.environ["KAFKA_SUBSCRIBER"] = "localhost:29092"
 
-asset_list = binance.get_future_assets()
+struct = {"15m": "m15",
+          "30m": "m30",
+          "1h": "h1",
+          }
 
 LOOKBACK = 200
 
-data_base = {}
-for period in periods:
-    if period not in data_base:
-        data_base[period] = {}
+N_TRADES_LIMIT = int(os.getenv("N_TRADES_LIMIT", 10))
+SQN_LIMIT = int(os.getenv("SQN_LIMIT", 1.5))
 
 
-def get_symbol_data(period, ticker) -> None:
-    data_base[period][ticker] = mongo.get_data("petrosa_crypto",
-                                               COL_PREFIX + period, ticker, LOOKBACK)
+def get_bt_result(symbol, strategy, period):
+    bt_result = mongo.get_client()["petrosa_crypto"]["backtest_results"].find_one({"period": period,
+                                                                                   "symbol": symbol,
+                                                                                   "strategy": strategy})
+    return bt_result
+
+def run_strategies(raw_period, ticker) -> None:
+    time.sleep(1)
+    data = mongo.get_data("petrosa_crypto",
+                          "candles_" + struct[raw_period], ticker, LOOKBACK)
+    print("getting data for ", ticker, struct[raw_period])
+    for ta in screenings.strategy_list:
+        print("Running strategy ", ta, " for ", ticker, " in ", struct[raw_period])
+        func = getattr(screenings, ta)
+        result = func(data, struct[raw_period])
+        if result != {}:
+            bt_result = get_bt_result(symbol=ticker, strategy=ta, period=struct[raw_period])
+            if(bt_result and 
+               bt_result["n_trades"] > N_TRADES_LIMIT and 
+               bt_result["sqn"] > SQN_LIMIT):
+                print("persisting", result)
+                mongo.get_client()["petrosa_crypto"]["time_limit_orders"].insert_one(result)
+
+receiver = kafkareceiver.get_consumer("binance_klines_current")
 
 
-def get_all_data():
-    for period in periods:
-        for ticker in asset_list:
-            threading.Thread(target=get_symbol_data, args=(
-                period, ticker["symbol"],)).start()
+_thread_list = []
+for msg in receiver:
+    # print(json.loads(msg.value.decode()))
+    msg = msg.value.decode()
+    curr_kline = msg
+    _t = threading.Thread(target=run_strategies, 
+                          args=(curr_kline["k"]["i"], curr_kline["k"]["s"],))
+    _t.start()
+    _thread_list.append(_t)
+    
 
-
-get_all_data()
-
-print("le fin")
+for _thread in _thread_list:
+    _thread.join()

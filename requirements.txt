@@ -6,7 +6,7 @@ kafka-python==2.0.2
 newrelic
 numpy==1.24.2
 pandas==2.0.0
-petrosa git+https://github.com/yurisa2/petrosa-utils
+git+https://github.com/yurisa2/petrosa-utils
 pymongo==4.3.3
 python-dateutil==2.8.2
 pytz==2023.3

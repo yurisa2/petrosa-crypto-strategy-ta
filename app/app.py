@@ -41,8 +41,9 @@ def run_strategies(raw_period, ticker) -> None:
             if(bt_result and 
                bt_result["n_trades"] > N_TRADES_LIMIT and 
                bt_result["sqn"] > SQN_LIMIT):
+                full_result = {**result, **bt_result}
                 print("persisting", result)
-                mongo.get_client()["petrosa_crypto"]["time_limit_orders"].insert_one(result)
+                mongo.get_client()["petrosa_crypto"]["time_limit_orders"].insert_one(full_result)
 
 receiver = kafkareceiver.get_consumer("binance_klines_current")
 

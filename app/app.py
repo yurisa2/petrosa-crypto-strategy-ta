@@ -50,7 +50,7 @@ receiver = kafkareceiver.get_consumer("binance_klines_current")
 _thread_list = []
 for msg in receiver:
     # print(json.loads(msg.value.decode()))
-    msg = msg.value.decode()
+    msg = json.loads(msg.value.decode())
     curr_kline = msg
     _t = threading.Thread(target=run_strategies, 
                           args=(curr_kline["k"]["i"], curr_kline["k"]["s"],))

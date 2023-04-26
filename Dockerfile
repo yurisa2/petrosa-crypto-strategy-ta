@@ -14,7 +14,6 @@ RUN apt update && apt install -y git
 
 # Install production dependencies.
 RUN pip3 install --no-cache-dir -r requirements.txt
-RUN pip3 install newrelic
 
 ENV NEW_RELIC_APP_NAME=petrosa-crypto-nosql
 ENV NEW_RELIC_DISTRIBUTED_TRACING_ENABLED=true

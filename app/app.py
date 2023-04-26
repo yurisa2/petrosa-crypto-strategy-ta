@@ -8,7 +8,7 @@ import json
 import time
 
 
-os.environ["KAFKA_SUBSCRIBER"] = "localhost:29092"
+# os.environ["KAFKA_SUBSCRIBER"] = "localhost:29092"
 
 struct = {"15m": "m15",
           "30m": "m30",

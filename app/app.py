@@ -28,6 +28,10 @@ def get_bt_result(symbol, strategy, period):
     return bt_result
 
 def run_strategies(raw_period, ticker) -> None:
+    if(raw_period not in struct):
+        print("period", raw_period, "not allowed. exiting...")
+        return 
+        
     time.sleep(1)
     data = mongo.get_data("petrosa_crypto",
                           "candles_" + struct[raw_period], ticker, LOOKBACK)

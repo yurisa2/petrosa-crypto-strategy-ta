@@ -29,15 +29,15 @@ def get_bt_result(symbol, strategy, period):
 
 def run_strategies(raw_period, ticker) -> None:
     if(raw_period not in struct):
-        print("period", raw_period, "not allowed. exiting...")
+        # print("period", raw_period, "not allowed. exiting...")
         return 
         
     time.sleep(1)
     data = mongo.get_data("petrosa_crypto",
                           "candles_" + struct[raw_period], ticker, LOOKBACK)
-    print("getting data for ", ticker, struct[raw_period])
+    # print("getting data for ", ticker, struct[raw_period])
     for ta in screenings.strategy_list:
-        print("Running strategy ", ta, " for ", ticker, " in ", struct[raw_period])
+        # print("Running strategy ", ta, " for ", ticker, " in ", struct[raw_period])
         func = getattr(screenings, ta)
         result = func(data, struct[raw_period])
         if result != {}:

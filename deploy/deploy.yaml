@@ -17,11 +17,11 @@ spec:
     spec:
       containers:
       - name: nosql-petrosa-binance
-        image: yurisa2/petrosa-crypto-strategy-ta:v0.0.8
+        image: yurisa2/petrosa-crypto-strategy-ta:v0.0.9
         imagePullPolicy: Always
         env:
           - name: VERSION
-            value: "0.0.8"
+            value: "0.0.9"
           - name: KAFKA_SUBSCRIBER
             valueFrom:
               secretKeyRef:
@@ -34,11 +34,48 @@ spec:
                 name: petrosa-apps-secret
                 key: MONGO_URI
                 optional: false
-
-          - name: NEW_RELIC_LICENSE_KEY
+                - name: OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
             valueFrom:
               secretKeyRef:
                 name: petrosa-apps-secret
-                key: NEW_RELIC_LICENSE_KEY
+                key: OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
                 optional: false
+          - name: OTEL_EXPORTER_OTLP_METRIC_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                name: petrosa-apps-secret
+                key: OTEL_EXPORTER_OTLP_METRIC_ENDPOINT
+                optional: false
+          - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                name: petrosa-apps-secret
+                key: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+                optional: false
+
+          - name: OTEL_SERVICE_NAME
+            value: "petrosa-crypto-strategy-ta"
+          - name: OTEL_TRACES_EXPORTER
+            value: "otlp"
+          - name: OTEL_METRICS_EXPORTER
+            value: "otlp"
+          - name: OTEL_LOGS_EXPORTER
+            value: "otlp"
+          - name: OTEL_PYTHON_LOG_CORRELATION
+            value: "true"
+          - name: OTEL_EXPORTER_OTLP_INSECURE
+            value: "true"
+          - name: OTEL_EXPORTER_OTLP_TRACES_INSECURE
+            value: "true"
+          - name: OTEL_EXPORTER_OTLP_LOGS_INSECURE
+            value: "true"
+          - name: OTEL_EXPORTER_OTLP_METRICS_INSECURE
+            value: "true"
+          - name: OTEL_EXPORTER_OTLP_METRIC_INSECURE
+            value: "true"
+          - name: OTEL_EXPORTER_OTLP_SPAN_INSECURE
+            value: "true"
+          - name: OTEL_METRIC_EXPORT_INTERVAL
+            value: "5"
       restartPolicy: Always
+         

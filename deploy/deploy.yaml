@@ -17,11 +17,11 @@ spec:
     spec:
       containers:
       - name: nosql-petrosa-binance
-        image: yurisa2/petrosa-crypto-strategy-ta:v0.0.9
+        image: yurisa2/petrosa-crypto-strategy-ta:v0.0.10
         imagePullPolicy: Always
         env:
           - name: VERSION
-            value: "0.0.9"
+            value: "0.0.10"
           - name: KAFKA_SUBSCRIBER
             valueFrom:
               secretKeyRef:
@@ -34,7 +34,7 @@ spec:
                 name: petrosa-apps-secret
                 key: MONGO_URI
                 optional: false
-                - name: OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
+          - name: OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
             valueFrom:
               secretKeyRef:
                 name: petrosa-apps-secret

@@ -1,14 +1,15 @@
-from petrosa.ta import strategies as screenings
-from petrosa.database import mongo
-from petrosa.binance import binance
-from petrosa.messaging import kafkareceiver
-import threading
-import os
 import json
+import logging
+import os
+import threading
 import time
 
+from petrosa.binance import binance
+from petrosa.database import mongo
+from petrosa.messaging import kafkareceiver
+from petrosa.ta import strategies as screenings
 
-# os.environ["KAFKA_SUBSCRIBER"] = "localhost:29092"
+logging.basicConfig(level=logging.INFO)
 
 struct = {"15m": "m15",
           "30m": "m30",
@@ -35,9 +36,11 @@ def run_strategies(raw_period, ticker) -> None:
     time.sleep(1)
     data = mongo.get_data("petrosa_crypto",
                           "candles_" + struct[raw_period], ticker, LOOKBACK)
-    # print("getting data for ", ticker, struct[raw_period])
+    msg = "getting data for ", ticker, struct[raw_period]
+    logging.info(msg)
     for ta in screenings.strategy_list:
-        # print("Running strategy ", ta, " for ", ticker, " in ", struct[raw_period])
+        msg2 = "Running strategy ", ta, " for ", ticker, " in ", struct[raw_period]
+        logging.info(msg2)
         func = getattr(screenings, ta)
         result = func(data, struct[raw_period])
         if result != {}:
@@ -47,7 +50,8 @@ def run_strategies(raw_period, ticker) -> None:
                 bt_result["n_trades"] > N_TRADES_LIMIT and 
                 bt_result["sqn"] > SQN_LIMIT):
                     full_result = {**result, **bt_result}
-                    print("persisting", result)
+                    msg3 = "persisting", result
+                    logging.info(msg3)
                     mongo.get_client()["petrosa_crypto"]["time_limit_orders"].insert_one(full_result)
             except Exception as e:
                 print(e, result, bt_result)

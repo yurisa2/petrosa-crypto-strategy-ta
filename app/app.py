@@ -53,8 +53,18 @@ def run_strategies(raw_period, ticker) -> None:
                     msg3 = "persisting", result
                     logging.info(msg3)
                     mongo.get_client()["petrosa_crypto"]["time_limit_orders"].insert_one(full_result)
+                    order_res = binance.send_order(ticker=ticker, 
+                                       type=full_result["type"], 
+                                       price=full_result["entry_value"],
+                                       stop_loss=full_result["stop_loss"],
+                                       take_profit=full_result["take_profit"],
+                                       valid_until=full_result["valid_until"]
+                                       )
+                    logging.info(order_res)
+                    
             except Exception as e:
-                print(e, result, bt_result)
+                msg = str(e) + " - " + str(result) + " - " + str(bt_result)
+                logging.error(msg)
 
 receiver = kafkareceiver.get_consumer("binance_klines_current")
 

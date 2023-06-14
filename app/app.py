@@ -37,10 +37,10 @@ def run_strategies(raw_period, ticker) -> None:
     data = mongo.get_data("petrosa_crypto",
                           "candles_" + struct[raw_period], ticker, LOOKBACK)
     msg = "getting data for ", ticker, struct[raw_period]
-    logging.info(msg)
+    # logging.info(msg)
     for ta in screenings.strategy_list:
-        msg2 = "Running strategy ", ta, " for ", ticker, " in ", struct[raw_period]
-        logging.info(msg2)
+        # msg2 = "Running strategy ", ta, " for ", ticker, " in ", struct[raw_period]
+        # logging.info(msg2)
         func = getattr(screenings, ta)
         result = func(data, struct[raw_period])
         if result != {}:
@@ -50,8 +50,8 @@ def run_strategies(raw_period, ticker) -> None:
                 bt_result["n_trades"] > N_TRADES_LIMIT and 
                 bt_result["sqn"] > SQN_LIMIT):
                     full_result = {**result, **bt_result}
-                    msg3 = "persisting", result
-                    logging.info(msg3)
+                    # msg3 = "persisting", result
+                    # logging.info(msg3)
                     mongo.get_client()["petrosa_crypto"]["time_limit_orders"].insert_one(full_result)
                     order_res = binance.send_order(ticker=ticker, 
                                        type=full_result["type"], 

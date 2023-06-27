@@ -17,11 +17,11 @@ spec:
     spec:
       containers:
       - name: nosql-petrosa-binance
-        image: yurisa2/petrosa-crypto-strategy-ta:v0.0.13
+        image: yurisa2/petrosa-crypto-strategy-ta:v0.0.14
         imagePullPolicy: Always
         env:
           - name: VERSION
-            value: "0.0.13"
+            value: "0.0.14"
           - name: KAFKA_SUBSCRIBER
             valueFrom:
               secretKeyRef:

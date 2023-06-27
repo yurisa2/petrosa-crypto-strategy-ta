@@ -19,7 +19,7 @@ struct = {"15m": "m15",
 LOOKBACK = 200
 
 N_TRADES_LIMIT = int(os.getenv("N_TRADES_LIMIT", 10))
-SQN_LIMIT = int(os.getenv("SQN_LIMIT", 1.5))
+SQN_LIMIT = int(os.getenv("SQN_LIMIT", 1))
 
 
 def get_bt_result(symbol, strategy, period):

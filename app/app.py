@@ -60,7 +60,7 @@ def run_strategies(raw_period, ticker) -> None:
                                        take_profit=full_result["take_profit"],
                                        valid_until=full_result["valid_until"]
                                        )
-                    logging.info(order_res)
+                    print(order_res)
                     
             except Exception as e:
                 msg = str(e) + " - " + str(result) + " - " + str(bt_result)

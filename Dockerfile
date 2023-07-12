@@ -15,4 +15,5 @@ RUN apt update && apt install -y git
 # Install production dependencies.
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-ENTRYPOINT ["opentelemetry-instrument", "python", "main.py"]
+# ENTRYPOINT ["opentelemetry-instrument", "python", "main.py"]
+ENTRYPOINT ["python", "main.py"]
